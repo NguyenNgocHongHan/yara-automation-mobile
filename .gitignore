@@ -1,0 +1,16 @@
+.DS_Store
+.env
+!.env.example
+node_modules/
+*.log
+.appium/
+allure-results/
+allure-report/
+reports/
+apps/*.apk
+apps/**/*.apk
+apps/*.ipa
+apps/**/*.ipa
+apps/*.app
+apps/**/*.app
+!apps/.gitkeep

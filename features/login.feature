@@ -1,12 +1,12 @@
-Feature: The Internet Guinea Pig Website
+Feature: Language selection
 
-  Scenario Outline: As a user, I can log into the secure area
+  Scenario Outline: As a user, I can choose a language on the first screen
 
-    Given I am on the login page
-    When I login with <username> and <password>
-    Then I should see a message saying <message>
+    Given the app is on the language selection screen
+    When I select the <language> language
+    Then the Next button should be enabled
 
     Examples:
-      | username | password             | message                        |
-      | tomsmith | SuperSecretPassword! | You logged into a secure area! |
-      | foobar   | barfoo               | Your username is invalid!      |
+      | language  |
+      | English   |
+      | Tiếng Việt |

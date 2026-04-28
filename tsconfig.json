@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "moduleResolution": "node",
-        "module": "ESNext",
+        "moduleResolution": "NodeNext",
+        "module": "NodeNext",
         "target": "es2022",
         "lib": [
             "es2022",
@@ -29,6 +29,7 @@
     "include": [
         "test",
         "wdio.conf.ts",
+        "wdio.*.conf.ts",
         "features"
     ]
 }

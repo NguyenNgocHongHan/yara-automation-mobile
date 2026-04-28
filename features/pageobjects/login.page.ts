@@ -1,27 +1,34 @@
 import { $ } from '@wdio/globals'
 import Page from './page.js';
+import { androidLoginLocator } from '../locators/android/login.locator.js';
+import { iosLoginLocator } from '../locators/ios/login.locator.js';
+import { resolvePlatformLocators } from '../support/platform.js';
 
 class LoginPage extends Page {
-    /**
-     * Define selectors using a cross-platform approach.
-     * Use Accessibility ID (~) if possible, it's the most reliable for both.
-     */
+    private get locators () {
+        return resolvePlatformLocators({
+            android: androidLoginLocator,
+            ios: iosLoginLocator,
+        });
+    }
+
     get inputUsername () { 
-        // Example: If ID is different between platforms
-        return driver.isAndroid 
-            ? $('//android.widget.EditText[@content-desc="input-email"]') 
-            : $('~input-email'); 
+        return $(this.locators.inputUsername);
     }
 
     get inputPassword () { 
-        return $('~input-password'); // Using accessibility ID (~), which works for both if dev sets it same
+        return $(this.locators.inputPassword);
     }
 
     get btnSubmit () { 
-        return $('~button-LOGIN'); 
+        return $(this.locators.btnSubmit);
     }
 
-    async login (username, password) {
+    get alertMessage () {
+        return $(this.locators.alertMessage);
+    }
+
+    async login (username: string, password: string) {
         await this.inputUsername.setValue(username);
         await this.inputPassword.setValue(password);
         await this.btnSubmit.click();

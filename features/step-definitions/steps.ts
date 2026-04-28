@@ -1,20 +1,18 @@
 import { Given, When, Then } from '@wdio/cucumber-framework';
-import { expect, $ } from '@wdio/globals'
+import { expect } from '@wdio/globals'
 
-import LoginPage from '../pageobjects/login.page.js';
+import LanguageSelectionPage from '../pageobjects/language-selection.page.js';
 
-Given(/^I am on the login page$/, async () => {
-    // On mobile, just check if the login button is displayed to confirm we're on the right page
-    await expect(LoginPage.btnSubmit).toBeDisplayed();
+Given(/^the app is on the language selection screen$/, async () => {
+    await LanguageSelectionPage.dismissNotificationPromptIfDisplayed();
+    await LanguageSelectionPage.waitForScreen();
+    await expect(LanguageSelectionPage.title).toBeDisplayed();
 });
 
-When(/^I login with (\w+) and (.+)$/, async (username, password) => {
-    await LoginPage.login(username, password)
+When(/^I select the (English|Tiếng Việt) language$/, async (language: 'English' | 'Tiếng Việt') => {
+    await LanguageSelectionPage.selectLanguage(language);
 });
 
-Then(/^I should see a message saying (.*)$/, async (message) => {
-    // You can customize this based on your app's alert or message component
-    // Example: checking an alert title or a text label
-    const alert = await $('~alert-message'); 
-    await expect(alert).toHaveText(expect.stringContaining(message));
+Then(/^the Next button should be enabled$/, async () => {
+    await expect(LanguageSelectionPage.nextButton).toBeEnabled();
 });
