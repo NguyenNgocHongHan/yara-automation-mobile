@@ -5,7 +5,7 @@ export const sharedConfig: Omit<WebdriverIO.Config, 'capabilities'> = {
     tsConfigPath: './tsconfig.json',
     port: 4723,
     specs: [
-        './features/**/*.feature'
+        './src/features/**/*.feature'
     ],
     exclude: [],
     maxInstances: 1, // Mobile usually runs sequentially on 1 device
@@ -18,7 +18,7 @@ export const sharedConfig: Omit<WebdriverIO.Config, 'capabilities'> = {
     framework: 'cucumber',
     reporters: ['spec'],
     cucumberOpts: {
-        require: ['./features/step-definitions/**/*.ts'],
+        require: ['./src/steps/**/*.ts'],
         backtrace: false,
         requireModule: [],
         dryRun: false,

@@ -1,12 +1,12 @@
 import { browser } from '@wdio/globals'
-import Page from './page.js';
+import BasePage from './base.page.js';
 import { androidLanguageSelectionLocator } from '../locators/android/language-selection.locator.js';
 import { iosLanguageSelectionLocator } from '../locators/ios/language-selection.locator.js';
 import { resolvePlatformLocators } from '../support/platform.js';
 
 type SupportedLanguage = 'English' | 'Tiếng Việt';
 
-class LanguageSelectionPage extends Page {
+class LanguageSelectionPage extends BasePage {
     private get locators () {
         return resolvePlatformLocators({
             android: androidLanguageSelectionLocator,
@@ -28,6 +28,10 @@ class LanguageSelectionPage extends Page {
 
     async waitForScreenReady () {
         await this.waitForScreen();
+        if (driver.isIOS) {
+            // iOS may still be settling from startup alerts/animations.
+            await browser.pause(500);
+        }
         await this.waitForDisplayed(this.getLanguageOption('English'), 10000);
         await this.waitForEnabled(this.getLanguageOption('English'), 10000);
         await this.waitForDisplayed(this.getLanguageOption('Tiếng Việt'), 10000);
@@ -41,13 +45,20 @@ class LanguageSelectionPage extends Page {
 
     async selectLanguageWithRetry (language: SupportedLanguage) {
         await this.selectLanguage(language);
-        await browser.pause(250);
+        const nextEnabledAfterFirstTap = await this.waitForNextButtonEnabledSafely(1500);
 
-        if (await this.isNextButtonEnabled()) {
+        if (nextEnabledAfterFirstTap) {
             return;
         }
 
+        if (driver.isIOS) {
+            // Force a deterministic state change on flaky iOS first-tap behavior.
+            const alternateLanguage: SupportedLanguage = language === 'English' ? 'Tiếng Việt' : 'English';
+            await this.selectLanguage(alternateLanguage);
+        }
+
         await this.selectLanguage(language);
+        await this.waitForNextButtonEnabled();
     }
 
     async tapNext () {
@@ -67,6 +78,15 @@ class LanguageSelectionPage extends Page {
                 timeoutMsg: 'Language was selected but Next button did not become enabled.',
             },
         );
+    }
+
+    private async waitForNextButtonEnabledSafely (timeout = 1500) {
+        try {
+            await this.waitForNextButtonEnabled(timeout);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     private getLanguageOption (language: SupportedLanguage) {

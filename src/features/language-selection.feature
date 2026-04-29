@@ -7,6 +7,6 @@ Feature: Language selection
     Then the Next button should be enabled
 
     Examples:
-      | language  |
-      | English   |
+      | language   |
+      | English    |
       | Tiếng Việt |

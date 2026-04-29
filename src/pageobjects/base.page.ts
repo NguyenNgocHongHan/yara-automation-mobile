@@ -2,7 +2,7 @@ import { $ } from '@wdio/globals'
 
 type UIElement = ReturnType<typeof $>;
 
-export default class Page {
+export default class BasePage {
     protected byAccessibilityId (id: string) {
         return $(`~${id}`);
     }
