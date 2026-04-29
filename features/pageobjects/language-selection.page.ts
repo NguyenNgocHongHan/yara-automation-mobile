@@ -1,4 +1,4 @@
-import { $ } from '@wdio/globals'
+import { browser } from '@wdio/globals'
 import Page from './page.js';
 import { androidLanguageSelectionLocator } from '../locators/android/language-selection.locator.js';
 import { iosLanguageSelectionLocator } from '../locators/ios/language-selection.locator.js';
@@ -15,63 +15,68 @@ class LanguageSelectionPage extends Page {
     }
 
     get title () {
-        return $(this.locators.title);
+        return this.bySelector(this.locators.title);
     }
 
     get nextButton () {
-        return $(this.locators.nextButton);
-    }
-
-    get allowNotificationsButton () {
-        return driver.isIOS ? $(iosLanguageSelectionLocator.notificationPrompt.allowButton) : null;
-    }
-
-    get denyNotificationsButton () {
-        return driver.isIOS ? $(iosLanguageSelectionLocator.notificationPrompt.denyButton) : null;
+        return this.bySelector(this.locators.nextButton);
     }
 
     async waitForScreen () {
-        await this.title.waitForDisplayed({
-            timeout: 15000,
-        });
+        await this.waitForDisplayed(this.title, 15000);
     }
 
-    async dismissNotificationPromptIfDisplayed (action: 'allow' | 'deny' = 'allow') {
-        if (!driver.isIOS) {
-            return;
-        }
-
-        const targetButton = action === 'allow'
-            ? this.allowNotificationsButton
-            : this.denyNotificationsButton;
-
-        if (!targetButton) {
-            return;
-        }
-
-        const isDisplayed = await targetButton.isDisplayed().catch(() => false);
-
-        if (isDisplayed) {
-            await targetButton.click();
-        }
+    async waitForScreenReady () {
+        await this.waitForScreen();
+        await this.waitForDisplayed(this.getLanguageOption('English'), 10000);
+        await this.waitForEnabled(this.getLanguageOption('English'), 10000);
+        await this.waitForDisplayed(this.getLanguageOption('Tiếng Việt'), 10000);
+        await this.waitForEnabled(this.getLanguageOption('Tiếng Việt'), 10000);
+        await this.waitForDisplayed(this.nextButton, 10000);
     }
 
     async selectLanguage (language: SupportedLanguage) {
-        await this.getLanguageOption(language).click();
+        await this.clickElement(this.getLanguageOption(language));
+    }
+
+    async selectLanguageWithRetry (language: SupportedLanguage) {
+        await this.selectLanguage(language);
+        await browser.pause(250);
+
+        if (await this.isNextButtonEnabled()) {
+            return;
+        }
+
+        await this.selectLanguage(language);
+    }
+
+    async tapNext () {
+        await this.clickElement(this.nextButton);
     }
 
     async isNextButtonEnabled () {
-        return this.nextButton.isEnabled();
+        return this.bySelector(this.locators.nextButton).isEnabled();
+    }
+
+    async waitForNextButtonEnabled (timeout = 10000) {
+        await browser.waitUntil(
+            async () => this.isNextButtonEnabled(),
+            {
+                timeout,
+                interval: 200,
+                timeoutMsg: 'Language was selected but Next button did not become enabled.',
+            },
+        );
     }
 
     private getLanguageOption (language: SupportedLanguage) {
         const normalizedLanguage = language.toLowerCase();
 
         if (normalizedLanguage === 'english') {
-            return $(this.locators.languageOptions.english);
+            return this.bySelector(this.locators.languageOptions.english);
         }
 
-        return $(this.locators.languageOptions.vietnamese);
+        return this.bySelector(this.locators.languageOptions.vietnamese);
     }
 }
 

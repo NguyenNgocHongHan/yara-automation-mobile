@@ -1,4 +1,3 @@
-import { $ } from '@wdio/globals'
 import Page from './page.js';
 import { androidLoginLocator } from '../locators/android/login.locator.js';
 import { iosLoginLocator } from '../locators/ios/login.locator.js';
@@ -13,25 +12,25 @@ class LoginPage extends Page {
     }
 
     get inputUsername () { 
-        return $(this.locators.inputUsername);
+        return this.bySelector(this.locators.inputUsername);
     }
 
     get inputPassword () { 
-        return $(this.locators.inputPassword);
+        return this.bySelector(this.locators.inputPassword);
     }
 
     get btnSubmit () { 
-        return $(this.locators.btnSubmit);
+        return this.bySelector(this.locators.btnSubmit);
     }
 
     get alertMessage () {
-        return $(this.locators.alertMessage);
+        return this.bySelector(this.locators.alertMessage);
     }
 
     async login (username: string, password: string) {
-        await this.inputUsername.setValue(username);
-        await this.inputPassword.setValue(password);
-        await this.btnSubmit.click();
+        await this.typeText(this.inputUsername, username);
+        await this.typeText(this.inputPassword, password);
+        await this.clickElement(this.btnSubmit);
     }
 }
 

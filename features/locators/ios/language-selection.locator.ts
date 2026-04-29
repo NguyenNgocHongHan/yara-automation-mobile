@@ -1,12 +1,8 @@
 export const iosLanguageSelectionLocator = {
-    title: '//*[@label="Select Language" or @name="Select Language"]',
-    nextButton: '//*[@label="Next" or @name="Next"]',
+    title: '~Select Language',
+    nextButton: '~languageSelectionScreen_button_saveButton',
     languageOptions: {
-        english: '//*[@label="English" or @name="English"]',
-        vietnamese: '//*[@label="Tiếng Việt" or @name="Tiếng Việt"]',
-    },
-    notificationPrompt: {
-        allowButton: '//XCUIElementTypeButton[@name="Allow"]',
-        denyButton: '//XCUIElementTypeButton[@name="Don\'t Allow"]',
+        english: '//*[@name="listPressableContainer" and @label="languageSelectionScreen_button_languageButton_en"]',
+        vietnamese: '//*[@name="listPressableContainer" and @label="languageSelectionScreen_button_languageButton_vi"]',
     },
 };
